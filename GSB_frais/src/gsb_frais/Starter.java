@@ -17,5 +17,10 @@ public class Starter {
      */
     public static void main(String[] args) {
         // TODO code application logic here
+        
+        GSB_Gestion_Utilisateur_Connexion onglet1 = new GSB_Gestion_Utilisateur_Connexion();
+        onglet1.setVisible(true);
+        
+        
     }
 }
