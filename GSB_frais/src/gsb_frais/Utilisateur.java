@@ -31,6 +31,10 @@ public class Utilisateur {
         this.dateEmbauche = dateEmbauche;
     }
     
+    public Object[] toArray(){
+        return new Object[] {this.nom, this.prenom, this.id};
+    }
+    
     public String getId() {
         return id;
     }
