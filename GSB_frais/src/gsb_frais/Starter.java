@@ -7,6 +7,8 @@ package gsb_frais;
 /**
  *
  * @author efleury
+ * @author amhoumadi
+ * 
  */
 public class Starter {
 
