@@ -66,6 +66,7 @@ public class BaseDeDonnees {
     }
     
     public ArrayList<Utilisateur> getUtilisateurs(String chaineRecherche){
+        chaineRecherche = chaineRecherche.toLowerCase();
         ArrayList<Utilisateur> users = new ArrayList<>();
         String sqlRequest = "SELECT id, nom, prenom, login, mdp, adresse, cp, ville, dateEmbauche FROM visiteur";
         try{
@@ -79,14 +80,19 @@ public class BaseDeDonnees {
                 String userMdp = rs.getString("mdp");
                 String userAdresse = rs.getString("adresse");
                 String userCp = rs.getString("cp");
-                String userVille = rs.getString("vile");
+                String userVille = rs.getString("ville");
                 String userDateEmbauche = rs.getString("dateEmbauche");
-                if (userId.equals(chaineRecherche)){
+                if (userId.toLowerCase().startsWith(chaineRecherche)){
                     users.add(new Utilisateur(userId, userNom, userPrenom, userLogin, userMdp, userAdresse, userCp, userVille, userDateEmbauche));
                 }
                 else {
-                    if (userNom.equals(chaineRecherche)){
+                    if (userNom.toLowerCase().startsWith(chaineRecherche)){
                         users.add(new Utilisateur(userId, userNom, userPrenom, userLogin, userMdp, userAdresse, userCp, userVille, userDateEmbauche));
+                    }
+                    else {
+                        if (userPrenom.toLowerCase().startsWith(chaineRecherche)) {
+                            users.add(new Utilisateur(userId, userNom, userPrenom, userLogin, userMdp, userAdresse, userCp, userVille, userDateEmbauche));
+                        }
                     }
                 }
             }
@@ -111,7 +117,7 @@ public class BaseDeDonnees {
                 String userMdp = rs.getString("mdp");
                 String userAdresse = rs.getString("adresse");
                 String userCp = rs.getString("cp");
-                String userVille = rs.getString("vile");
+                String userVille = rs.getString("ville");
                 String userDateEmbauche = rs.getString("dateEmbauche");
                 users.add(new Utilisateur(userId, userNom, userPrenom, userLogin, userMdp, userAdresse, userCp, userVille, userDateEmbauche));
             }

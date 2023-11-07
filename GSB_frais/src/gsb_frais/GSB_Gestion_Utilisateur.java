@@ -4,19 +4,50 @@
  */
 package gsb_frais;
 
+import javax.swing.DefaultListModel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+import javax.swing.table.DefaultTableModel;
+
 /**
  *
  * @author efleury
+ * @author amhoumadi
  */
 public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
+    private DefaultListModel<Utilisateur> listModel;
+    private DefaultTableModel tableModel;
+    private BaseDeDonnees bdd;
 
     /**
      * Creates new form GSB_Gestion_Utilisateur
      */
     public GSB_Gestion_Utilisateur() {
+        this.listModel = new DefaultListModel<>();
+        this.tableModel = new DefaultTableModel();
         initComponents();
+        this.bdd = new BaseDeDonnees();
+        this.tableModel.setRowCount(0);
+        String[] header = new String[] {"Nom", "Prénom", "ID"};
+        this.tableModel.setColumnIdentifiers(header);
+        tableVisiteurs.setModel(tableModel);
+        this.actualiserTableVisiteur();
+    }
+    
+    final void actualiserTableVisiteur() {
+        this.tableModel.setRowCount(0);
+        for (Utilisateur user : bdd.getUtilisateurs()) {
+            tableModel.addRow(user.toArray());
+        }
     }
 
+    final void actualiserTableVisiteur(String aChercher) {
+        this.tableModel.setRowCount(0);
+        for (Utilisateur user : bdd.getUtilisateurs(aChercher)) {
+            tableModel.addRow(user.toArray());
+        }
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -59,7 +90,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jLabel14 = new javax.swing.JLabel();
         modDateEmbauche = new javax.swing.JTextField();
         jLabel15 = new javax.swing.JLabel();
-        modDateDepart = new javax.swing.JTextField();
+        modIdentifiant = new javax.swing.JTextField();
         jPanel12 = new javax.swing.JPanel();
         jPanel13 = new javax.swing.JPanel();
         jPanel6 = new javax.swing.JPanel();
@@ -89,8 +120,28 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
                 "Title 1", "Title 2", "Title 3", "Title 4"
             }
         ));
+        tableVisiteurs.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         tableVisiteurs.setVerifyInputWhenFocusTarget(false);
         jScrollPane1.setViewportView(tableVisiteurs);
+        tableVisiteurs.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            public void valueChanged(ListSelectionEvent event) {
+                if (tableModel.getRowCount() != 0) {
+                    Utilisateur user = bdd.getUtilisateurs(tableVisiteurs.getValueAt(tableVisiteurs.getSelectedRow(), 2).toString()).get(0);
+                    affichageNom.setText(user.getNom());
+                    affichagePrenom.setText(user.getPrenom());
+                    affichageIdentifiant.setText(user.getId());
+                    modNom.setText(user.getNom());
+                    modPrenom.setText(user.getPrenom());
+                    modLogin.setText(user.getLogin());
+                    modMDP.setText(user.getMdp());
+                    modAdresse.setText(user.getAdresse());
+                    modVille.setText(user.getVille());
+                    modCodePostal.setText(user.getCp());
+                    modDateEmbauche.setText(user.getDateEmbauche());
+                    modIdentifiant.setText(user.getId());
+                }
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -255,7 +306,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
 
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
-        jLabel15.setText("Date de départ :");
+        jLabel15.setText("Identifiant :");
 
         jPanel12.setBackground(new java.awt.Color(221, 181, 19));
 
@@ -312,7 +363,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
                                 .addGap(39, 39, 39)
                                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(modDateEmbauche, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE)
-                                    .addComponent(modDateDepart, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE))))
+                                    .addComponent(modIdentifiant, javax.swing.GroupLayout.DEFAULT_SIZE, 244, Short.MAX_VALUE))))
                         .addGap(53, 53, 53))
                     .addGroup(jPanel8Layout.createSequentialGroup()
                         .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -383,7 +434,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel8Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(modDateDepart))
+                    .addComponent(modIdentifiant))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -407,7 +458,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
 
         jPanel7.setBackground(new java.awt.Color(204, 204, 204));
 
-        affichageIdentifiant.setFont(new java.awt.Font("Segoe UI", 0, 18)); // NOI18N
+        affichageIdentifiant.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         affichageIdentifiant.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         affichageIdentifiant.setText("Identifiant");
         affichageIdentifiant.setToolTipText("");
@@ -477,9 +528,8 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
-                .addGap(0, 0, 0)
                 .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(18, 18, 18)
+                .addGap(21, 21, 21)
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, Short.MAX_VALUE))
         );
@@ -498,7 +548,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void barreRechercheActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_barreRechercheActionPerformed
-        // TODO add your handling code here:
+        this.actualiserTableVisiteur(barreRecherche.getText());
     }//GEN-LAST:event_barreRechercheActionPerformed
 
     private void boutonMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boutonMenuActionPerformed
@@ -573,8 +623,8 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JTextField modAdresse;
     private javax.swing.JTextField modCodePostal;
-    private javax.swing.JTextField modDateDepart;
     private javax.swing.JTextField modDateEmbauche;
+    private javax.swing.JTextField modIdentifiant;
     private javax.swing.JTextField modLogin;
     private javax.swing.JTextField modMDP;
     private javax.swing.JTextField modNom;
