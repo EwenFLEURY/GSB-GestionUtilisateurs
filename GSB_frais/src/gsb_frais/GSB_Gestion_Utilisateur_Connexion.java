@@ -17,6 +17,16 @@ public class GSB_Gestion_Utilisateur_Connexion extends javax.swing.JFrame {
         initComponents();
         error.setVisible(false);
     }
+    
+    public void connecte(){
+        if(this.identifiant.getText().equals("admin") && String.valueOf(this.mdp.getPassword()).equals("admin")){
+            new GSB_Gestion_Utilisateur().setVisible(true);
+            this.setVisible(false);
+        }  
+        else{
+            error.setVisible(true);
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -192,16 +202,18 @@ public class GSB_Gestion_Utilisateur_Connexion extends javax.swing.JFrame {
 
     private void mdpActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mdpActionPerformed
         // TODO add your handling code here:
+        connecte();
     }//GEN-LAST:event_mdpActionPerformed
 
     private void validerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validerActionPerformed
-        if(this.identifiant.getText().equals("admin") && String.valueOf(this.mdp.getPassword()).equals("admin")){
-            new GSB_Gestion_Utilisateur().setVisible(true);
-            this.setVisible(false);
-        }  
-        else{
-            error.setVisible(true);
-        }
+//        if(this.identifiant.getText().equals("admin") && String.valueOf(this.mdp.getPassword()).equals("admin")){
+//            new GSB_Gestion_Utilisateur().setVisible(true);
+//            this.setVisible(false);
+//        }  
+//        else{
+//            error.setVisible(true);
+//        }
+        connecte();
         
         
     }//GEN-LAST:event_validerActionPerformed
