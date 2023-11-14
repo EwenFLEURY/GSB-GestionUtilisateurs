@@ -195,20 +195,12 @@ public class GSB_Gestion_Utilisateur_Connexion extends javax.swing.JFrame {
     }//GEN-LAST:event_mdpActionPerformed
 
     private void validerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_validerActionPerformed
-        
-        boolean b = String.valueOf(this.mdp.getPassword()).equals("admin");
-        
         if(this.identifiant.getText().equals("admin") && String.valueOf(this.mdp.getPassword()).equals("admin")){
             new GSB_Gestion_Utilisateur().setVisible(true);
             this.setVisible(false);
-            System.out.println("un");
-            
         }  
         else{
             error.setVisible(true);
-            System.out.println("deux");
-            System.out.println(this.mdp.getPassword());
-            
         }
         
         
