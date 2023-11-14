@@ -49,14 +49,12 @@ public class BaseDeDonnees {
     }
 
     public boolean modifierUtilisateur(Utilisateur originel, Utilisateur nouvelUtilisateur){
-        String sqlRequestSet = "id="+nouvelUtilisateur.getId()+", nom="+nouvelUtilisateur.getNom()+", prenom="+nouvelUtilisateur.getPrenom()+", login="+nouvelUtilisateur.getLogin()+", mdp="+nouvelUtilisateur.getMdp()+", adresse="+nouvelUtilisateur.getAdresse()+", cp="+nouvelUtilisateur.getCp()+", ville="+nouvelUtilisateur.getVille()+", dateEmbauche="+nouvelUtilisateur.getDateEmbauche();
-        String sqlRequest = "UPDATE visiteur SET "+sqlRequestSet+" WHERE id="+originel.getId();
+        String sqlRequestSet = "id='"+nouvelUtilisateur.getId()+"', nom='"+nouvelUtilisateur.getNom()+"', prenom='"+nouvelUtilisateur.getPrenom()+"', login='"+nouvelUtilisateur.getLogin()+"', mdp='"+nouvelUtilisateur.getMdp()+"', adresse='"+nouvelUtilisateur.getAdresse()+"', cp='"+nouvelUtilisateur.getCp()+"', ville='"+nouvelUtilisateur.getVille()+"', dateEmbauche='"+nouvelUtilisateur.getDateEmbauche()+"'";
+        String sqlRequest = "UPDATE visiteur SET "+sqlRequestSet+" WHERE id='"+originel.getId()+"'";
         try{
             Statement stmt = connexion.createStatement();
-            ResultSet rs = stmt.executeQuery(sqlRequest);
-            if (rs.wasNull()){
-                return false;
-            }
+            int result = stmt.executeUpdate(sqlRequest);
+            System.out.println(result);
             return true;
         }
         catch (SQLException e) {

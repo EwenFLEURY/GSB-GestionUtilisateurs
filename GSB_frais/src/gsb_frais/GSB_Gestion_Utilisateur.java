@@ -8,6 +8,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
+import java.util.ArrayList;
 
 /**
  *
@@ -18,6 +19,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
     private DefaultListModel<Utilisateur> listModel;
     private DefaultTableModel tableModel;
     private BaseDeDonnees bdd;
+    private boolean modification;
 
     /**
      * Creates new form GSB_Gestion_Utilisateur
@@ -25,6 +27,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
     public GSB_Gestion_Utilisateur() {
         this.listModel = new DefaultListModel<>();
         this.tableModel = new DefaultTableModel();
+        this.modification = false;
         initComponents();
         this.bdd = new BaseDeDonnees();
         this.tableModel.setRowCount(0);
@@ -46,6 +49,22 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         for (Utilisateur user : bdd.getUtilisateurs(aChercher)) {
             tableModel.addRow(user.toArray());
         }
+    }
+    
+    final void actualiserFenetreModification(String aChercher) {
+        Utilisateur user = bdd.getUtilisateurs(aChercher).get(0);
+        affichageNom.setText(user.getNom());
+        affichagePrenom.setText(user.getPrenom());
+        affichageIdentifiant.setText(user.getId());
+        modNom.setText(user.getNom());
+        modPrenom.setText(user.getPrenom());
+        modLogin.setText(user.getLogin());
+        modMDP.setText(user.getMdp());
+        modAdresse.setText(user.getAdresse());
+        modVille.setText(user.getVille());
+        modCodePostal.setText(user.getCp());
+        modDateEmbauche.setText(user.getDateEmbauche());
+        modIdentifiant.setText(user.getId());
     }
     
     /**
@@ -96,6 +115,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jPanel6 = new javax.swing.JPanel();
         jPanel7 = new javax.swing.JPanel();
         affichageIdentifiant = new javax.swing.JLabel();
+        buttonValider = new javax.swing.JButton();
         affichageNom = new javax.swing.JLabel();
         affichagePrenom = new javax.swing.JLabel();
 
@@ -125,20 +145,10 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jScrollPane1.setViewportView(tableVisiteurs);
         tableVisiteurs.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             public void valueChanged(ListSelectionEvent event) {
-                if (tableModel.getRowCount() != 0) {
-                    Utilisateur user = bdd.getUtilisateurs(tableVisiteurs.getValueAt(tableVisiteurs.getSelectedRow(), 2).toString()).get(0);
-                    affichageNom.setText(user.getNom());
-                    affichagePrenom.setText(user.getPrenom());
-                    affichageIdentifiant.setText(user.getId());
-                    modNom.setText(user.getNom());
-                    modPrenom.setText(user.getPrenom());
-                    modLogin.setText(user.getLogin());
-                    modMDP.setText(user.getMdp());
-                    modAdresse.setText(user.getAdresse());
-                    modVille.setText(user.getVille());
-                    modCodePostal.setText(user.getCp());
-                    modDateEmbauche.setText(user.getDateEmbauche());
-                    modIdentifiant.setText(user.getId());
+                if (tableModel.getRowCount() != 0 && !modification) {
+                    System.out.println("Lignes :");
+                    System.out.println(tableModel.getRowCount());
+                    actualiserFenetreModification(tableVisiteurs.getValueAt(tableVisiteurs.getSelectedRow(), 2).toString());
                 }
             }
         });
@@ -457,6 +467,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         );
 
         jPanel7.setBackground(new java.awt.Color(204, 204, 204));
+        jPanel7.setForeground(new java.awt.Color(204, 204, 204));
 
         affichageIdentifiant.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         affichageIdentifiant.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -464,15 +475,32 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         affichageIdentifiant.setToolTipText("");
         affichageIdentifiant.setName(""); // NOI18N
 
+        buttonValider.setBackground(new java.awt.Color(204, 204, 204));
+        buttonValider.setFont(new java.awt.Font("Segoe UI", 3, 14)); // NOI18N
+        buttonValider.setText("Valider Modifications");
+        buttonValider.setBorder(javax.swing.BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.RAISED, new java.awt.Color(204, 204, 204), new java.awt.Color(204, 204, 204)));
+        buttonValider.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                buttonValiderActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel7Layout = new javax.swing.GroupLayout(jPanel7);
         jPanel7.setLayout(jPanel7Layout);
         jPanel7Layout.setHorizontalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(affichageIdentifiant, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel7Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(affichageIdentifiant, javax.swing.GroupLayout.PREFERRED_SIZE, 246, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonValider, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(32, 32, 32))
         );
         jPanel7Layout.setVerticalGroup(
             jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(affichageIdentifiant, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(jPanel7Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addComponent(affichageIdentifiant, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(buttonValider))
         );
 
         affichageNom.setFont(new java.awt.Font("Segoe UI", 0, 36)); // NOI18N
@@ -487,11 +515,11 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jPanel6.setLayout(jPanel6Layout);
         jPanel6Layout.setHorizontalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel6Layout.createSequentialGroup()
                 .addComponent(affichageNom, javax.swing.GroupLayout.PREFERRED_SIZE, 255, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(affichagePrenom, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE))
+            .addComponent(jPanel7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -555,6 +583,24 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_boutonMenuActionPerformed
 
+    private void buttonValiderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonValiderActionPerformed
+        ArrayList<Utilisateur> users = bdd.getUtilisateurs(affichageIdentifiant.getText());
+        for (Utilisateur user : users) {
+            if (user.getNom().equals(affichageNom.getText())) {
+                if (user.getPrenom().equals(affichagePrenom.getText())) {
+                    if (user.getId().equals(affichageIdentifiant.getText())) {
+                        this.modification = true;
+                        Utilisateur userModified = new Utilisateur(modIdentifiant.getText(), modNom.getText(), modPrenom.getText(), modLogin.getText(), modMDP.getText(), modAdresse.getText(), modCodePostal.getText(), modVille.getText(), modDateEmbauche.getText());
+                        bdd.modifierUtilisateur(user, userModified);
+                        barreRecherche.setText("");
+                        actualiserTableVisiteur();
+                        this.modification = false;
+                    }
+                }
+            }
+        }
+    }//GEN-LAST:event_buttonValiderActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -595,6 +641,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
     private javax.swing.JLabel affichageNom;
     private javax.swing.JLabel affichagePrenom;
     private javax.swing.JTextField barreRecherche;
+    private javax.swing.JButton buttonValider;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;

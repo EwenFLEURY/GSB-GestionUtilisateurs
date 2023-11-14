@@ -145,7 +145,7 @@
                     </Property>
                   </Properties>
                   <AuxValues>
-                    <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="tableVisiteurs.getSelectionModel().addListSelectionListener(new ListSelectionListener(){&#xa;        public void valueChanged(ListSelectionEvent event) {&#xa;            if (tableModel.getRowCount() != 0) {&#xa;                Utilisateur user = bdd.getUtilisateurs(tableVisiteurs.getValueAt(tableVisiteurs.getSelectedRow(), 2).toString()).get(0);&#xa;                affichageNom.setText(user.getNom());&#xa;                affichagePrenom.setText(user.getPrenom());&#xa;                affichageIdentifiant.setText(user.getId());&#xa;                modNom.setText(user.getNom());&#xa;                modPrenom.setText(user.getPrenom());&#xa;                modLogin.setText(user.getLogin());&#xa;                modMDP.setText(user.getMdp());&#xa;                modAdresse.setText(user.getAdresse());&#xa;                modVille.setText(user.getVille());&#xa;                modCodePostal.setText(user.getCp());&#xa;                modDateEmbauche.setText(user.getDateEmbauche());&#xa;                modIdentifiant.setText(user.getId());&#xa;            }&#xa;        }&#xa;    });"/>
+                    <AuxValue name="JavaCodeGenerator_AddingCodePost" type="java.lang.String" value="tableVisiteurs.getSelectionModel().addListSelectionListener(new ListSelectionListener(){&#xa;        public void valueChanged(ListSelectionEvent event) {&#xa;            if (tableModel.getRowCount() != 0 &amp;&amp; !modification) {&#xa;                System.out.println(&quot;Lignes :&quot;);&#xa;                System.out.println(tableModel.getRowCount());&#xa;                actualiserFenetreModification(tableVisiteurs.getValueAt(tableVisiteurs.getSelectedRow(), 2).toString());&#xa;            }&#xa;        }&#xa;    });"/>
                   </AuxValues>
                 </Component>
               </SubComponents>
@@ -641,12 +641,12 @@
           <Layout>
             <DimensionLayout dim="0">
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jPanel7" max="32767" attributes="0"/>
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="affichageNom" min="-2" pref="255" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="affichagePrenom" pref="266" max="32767" attributes="0"/>
                   </Group>
+                  <Component id="jPanel7" alignment="0" max="32767" attributes="0"/>
               </Group>
             </DimensionLayout>
             <DimensionLayout dim="1">
@@ -668,17 +668,29 @@
                 <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
                   <Color blue="cc" green="cc" red="cc" type="rgb"/>
                 </Property>
+                <Property name="foreground" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                  <Color blue="cc" green="cc" red="cc" type="rgb"/>
+                </Property>
               </Properties>
 
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="affichageIdentifiant" alignment="0" max="32767" attributes="0"/>
+                      <Group type="102" alignment="0" attributes="0">
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="affichageIdentifiant" min="-2" pref="246" max="-2" attributes="0"/>
+                          <EmptySpace max="32767" attributes="0"/>
+                          <Component id="buttonValider" min="-2" pref="179" max="-2" attributes="0"/>
+                          <EmptySpace min="-2" pref="32" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="affichageIdentifiant" alignment="0" max="32767" attributes="0"/>
+                      <Group type="103" alignment="0" groupAlignment="3" attributes="0">
+                          <Component id="affichageIdentifiant" alignment="3" max="32767" attributes="0"/>
+                          <Component id="buttonValider" alignment="3" min="-2" max="-2" attributes="0"/>
+                      </Group>
                   </Group>
                 </DimensionLayout>
               </Layout>
@@ -693,6 +705,28 @@
                     <Property name="toolTipText" type="java.lang.String" value=""/>
                     <Property name="name" type="java.lang.String" value="" noResource="true"/>
                   </Properties>
+                </Component>
+                <Component class="javax.swing.JButton" name="buttonValider">
+                  <Properties>
+                    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
+                      <Color blue="cc" green="cc" red="cc" type="rgb"/>
+                    </Property>
+                    <Property name="font" type="java.awt.Font" editor="org.netbeans.beaninfo.editors.FontEditor">
+                      <Font name="Segoe UI" size="14" style="3"/>
+                    </Property>
+                    <Property name="text" type="java.lang.String" value="Valider Modifications"/>
+                    <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+                      <Border info="org.netbeans.modules.form.compat2.border.EtchedBorderInfo">
+                        <EtchetBorder bevelType="0">
+                          <Color PropertyName="highlight" blue="cc" green="cc" red="cc" type="rgb"/>
+                          <Color PropertyName="shadow" blue="cc" green="cc" red="cc" type="rgb"/>
+                        </EtchetBorder>
+                      </Border>
+                    </Property>
+                  </Properties>
+                  <Events>
+                    <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="buttonValiderActionPerformed"/>
+                  </Events>
                 </Component>
               </SubComponents>
             </Container>
