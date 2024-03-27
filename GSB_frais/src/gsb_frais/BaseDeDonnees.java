@@ -26,11 +26,11 @@ public class BaseDeDonnees {
     }
     
     public void ajouterUtilisateur(Utilisateur nouvelUtilisateur){
-        String sqlRequestValues = "'"+nouvelUtilisateur.getId()+"', '"+nouvelUtilisateur.getNom()+"', '"+nouvelUtilisateur.getPrenom()+"', '"+nouvelUtilisateur.getLogin()+"', '"+nouvelUtilisateur.getMdp()+"', '"+nouvelUtilisateur.getAdresse()+"', '"+nouvelUtilisateur.getCp()+"', '"+nouvelUtilisateur.getVille()+"', '"+nouvelUtilisateur.getDateEmbauche();
+        String sqlRequestValues = "'"+nouvelUtilisateur.getId()+"', '"+nouvelUtilisateur.getNom()+"', '"+nouvelUtilisateur.getPrenom()+"', '"+nouvelUtilisateur.getLogin()+"', '"+nouvelUtilisateur.getMdp()+"', '"+nouvelUtilisateur.getAdresse()+"', '"+nouvelUtilisateur.getCp()+"', '"+nouvelUtilisateur.getVille()+"', '"+nouvelUtilisateur.getDateEmbauche()+"'";
         String sqlRequest = "INSERT INTO visiteur (id, nom, prenom, login, mdp, adresse, cp, ville, dateEmbauche) VALUES ("+sqlRequestValues+")";
         try{
             Statement stmt = connexion.createStatement();
-            stmt.executeQuery(sqlRequest);
+            stmt.executeUpdate(sqlRequest);
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -38,10 +38,10 @@ public class BaseDeDonnees {
     }
 
     public void supprimerUtilisateur(Utilisateur utilisateurASupprimer){
-        String sqlRequest = "DELETE FROM visiteur WHERE id="+utilisateurASupprimer.getId();
+        String sqlRequest = "DELETE FROM visiteur WHERE id='"+utilisateurASupprimer.getId()+"'";
         try{
             Statement stmt = connexion.createStatement();
-            stmt.executeQuery(sqlRequest);
+            stmt.executeUpdate(sqlRequest);
         }
         catch (SQLException e) {
             System.out.println(e.getMessage());
@@ -53,8 +53,7 @@ public class BaseDeDonnees {
         String sqlRequest = "UPDATE visiteur SET "+sqlRequestSet+" WHERE id='"+originel.getId()+"'";
         try{
             Statement stmt = connexion.createStatement();
-            int result = stmt.executeUpdate(sqlRequest);
-            System.out.println(result);
+            stmt.executeUpdate(sqlRequest);
             return true;
         }
         catch (SQLException e) {
@@ -64,9 +63,8 @@ public class BaseDeDonnees {
     }
     
     public ArrayList<Utilisateur> getUtilisateurs(String chaineRecherche){
-        chaineRecherche = chaineRecherche.toLowerCase();
         ArrayList<Utilisateur> users = new ArrayList<>();
-        String sqlRequest = "SELECT id, nom, prenom, login, mdp, adresse, cp, ville, dateEmbauche FROM visiteur";
+        String sqlRequest = "SELECT id, nom, prenom, login, mdp, adresse, cp, ville, dateEmbauche FROM visiteur WHERE id LIKE '"+chaineRecherche+"%' OR nom LIKE '"+chaineRecherche+"%' OR prenom LIKE '"+chaineRecherche+"%'";
         try{
             Statement stmt = connexion.createStatement();
             ResultSet rs = stmt.executeQuery(sqlRequest);
@@ -80,19 +78,7 @@ public class BaseDeDonnees {
                 String userCp = rs.getString("cp");
                 String userVille = rs.getString("ville");
                 String userDateEmbauche = rs.getString("dateEmbauche");
-                if (userId.toLowerCase().startsWith(chaineRecherche)){
-                    users.add(new Utilisateur(userId, userNom, userPrenom, userLogin, userMdp, userAdresse, userCp, userVille, userDateEmbauche));
-                }
-                else {
-                    if (userNom.toLowerCase().startsWith(chaineRecherche)){
-                        users.add(new Utilisateur(userId, userNom, userPrenom, userLogin, userMdp, userAdresse, userCp, userVille, userDateEmbauche));
-                    }
-                    else {
-                        if (userPrenom.toLowerCase().startsWith(chaineRecherche)) {
-                            users.add(new Utilisateur(userId, userNom, userPrenom, userLogin, userMdp, userAdresse, userCp, userVille, userDateEmbauche));
-                        }
-                    }
-                }
+                users.add(new Utilisateur(userId, userNom, userPrenom, userLogin, userMdp, userAdresse, userCp, userVille, userDateEmbauche));
             }
         }
         catch (SQLException e) {
@@ -124,5 +110,33 @@ public class BaseDeDonnees {
             System.out.println(e.getMessage());
         }
         return users;
+    }
+    
+    public boolean identifiantValide(String identifiant) {
+        ArrayList<String> identifiants = new ArrayList<>();
+        String sqlRequest = "SELECT id FROM visiteur";
+        try{
+            Statement stmt = connexion.createStatement();
+            ResultSet rs = stmt.executeQuery(sqlRequest);
+            while (rs.next()) {
+                String userId = rs.getString("id");
+                identifiants.add(userId);
+            }
+            return !identifiants.contains(identifiant);
+        }
+        catch (SQLException e) {
+            System.out.println(e.getMessage());
+        }
+        return false;
+    }
+    
+    public String genererIdentifiantValide(){
+        java.util.Random random = new java.util.Random();
+        String[] lettres = {"a", "b", "c", "d", "e", "f"};
+        String chaine = lettres[random.nextInt(lettres.length)]+(1+random.nextInt(100));
+        while (!identifiantValide(chaine)) {
+            chaine = lettres[random.nextInt(lettres.length)]+(1+random.nextInt(100));
+        }
+        return chaine;
     }
 }

@@ -9,6 +9,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import java.util.ArrayList;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.awt.Color;
 
 /**
  *
@@ -20,6 +23,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
     private DefaultTableModel tableModel;
     private BaseDeDonnees bdd;
     private boolean modification;
+    private boolean ajoutUtilisateur;
 
     /**
      * Creates new form GSB_Gestion_Utilisateur
@@ -28,6 +32,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         this.listModel = new DefaultListModel<>();
         this.tableModel = new DefaultTableModel();
         this.modification = false;
+        this.ajoutUtilisateur = false;
         initComponents();
         this.bdd = new BaseDeDonnees();
         this.tableModel.setRowCount(0);
@@ -35,6 +40,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         this.tableModel.setColumnIdentifiers(header);
         tableVisiteurs.setModel(tableModel);
         this.actualiserTableVisiteur();
+        this.activerAjoutUtilisateur();
     }
     
     final void actualiserTableVisiteur() {
@@ -65,6 +71,155 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         modCodePostal.setText(user.getCp());
         modDateEmbauche.setText(user.getDateEmbauche());
         modIdentifiant.setText(user.getId());
+    }
+    
+    final void modifierUtilisateur() {
+        ArrayList<Utilisateur> users = bdd.getUtilisateurs(affichageIdentifiant.getText());
+        for (Utilisateur user : users) {
+            if (user.getNom().equals(affichageNom.getText())) {
+                if (user.getPrenom().equals(affichagePrenom.getText())) {
+                    if (user.getId().equals(affichageIdentifiant.getText())) {
+                        this.modification = true;
+                        String nom = modNom.getText();
+                        String prenom = modPrenom.getText();
+                        String login =  modLogin.getText();
+                        String mdp = modMDP.getText();
+                        String adresse = modAdresse.getText();
+                        String ville = modVille.getText();
+                        String cp = modCodePostal.getText();
+                        String date = modDateEmbauche.getText();
+                        if (!uneValeurPasBonne(nom, prenom, login, mdp, adresse, ville, cp, date, bdd.genererIdentifiantValide())){
+                            Utilisateur userModified = new Utilisateur(modIdentifiant.getText(), nom, prenom, login, mdp, adresse, cp, ville, date);
+                            bdd.modifierUtilisateur(user, userModified);
+                            barreRecherche.setText("Recherche");
+                            actualiserTableVisiteur();
+                        }
+                        this.modification = false;
+                    }
+                }
+            }
+        }
+    }
+    
+    final boolean uneValeurPasBonne(String nom, String prenom, String login, String mdp, String adresse, String ville, String cp, String date, String id) {
+        boolean erreur = false;
+        if (nom.equals("")) {
+            modNom.setBackground(new Color(240, 128, 128));
+            erreur = true;
+        }
+        else {
+            modNom.setBackground(Color.WHITE);
+        }
+        if (prenom.equals("")) {
+            modPrenom.setBackground(new Color(240, 128, 128));
+            erreur = true;
+        }
+        else {
+            modPrenom.setBackground(Color.WHITE);
+        }
+        if (login.length() < 2) {
+            if (!ajoutUtilisateur) {
+                modLogin.setBackground(new Color(240, 128, 128));
+            }
+            erreur = true;
+        }
+        else {
+            if (!ajoutUtilisateur) {
+                modLogin.setBackground(Color.WHITE);
+            }
+        }
+        if (mdp.length() < 5) {
+            modMDP.setBackground(new Color(240, 128, 128));
+            erreur = true;
+        }
+        else {
+            modMDP.setBackground(Color.WHITE);
+        }
+        if (adresse.equals("")) {
+            modAdresse.setBackground(new Color(240, 128, 128));
+            erreur = true;
+        }
+        else {
+            modAdresse.setBackground(Color.WHITE);
+        }
+        if (ville.equals("")) {
+            modVille.setBackground(new Color(240, 128, 128));
+            erreur = true;
+        }
+        else {
+            modVille.setBackground(Color.WHITE);
+        }
+        if (cp.length() != 5) {
+            modCodePostal.setBackground(new Color(240, 128, 128));
+            erreur = true;
+        }
+        else {
+            modCodePostal.setBackground(Color.WHITE);
+        }
+        if (date.length() != 10) {
+            modDateEmbauche.setBackground(new Color(240, 128, 128));
+            erreur = true;
+        }
+        else {
+            modDateEmbauche.setBackground(Color.WHITE);
+        }
+        if (!bdd.identifiantValide(id) || id.equals("")) {
+            modIdentifiant.setBackground(new Color(240, 128, 128));
+            erreur = true;
+        }
+        else {
+            modIdentifiant.setBackground(Color.WHITE);
+        }
+        return erreur;
+    }
+    
+    final void ajouterUtilisateur() {
+        String nouveauNom = modNom.getText();
+        String nouveauPrenom = modPrenom.getText();
+        String nouveauLogin = "";
+        if (nouveauPrenom.length() > 0) {
+            nouveauLogin = String.valueOf(nouveauPrenom.toLowerCase().charAt(0))+nouveauNom.toLowerCase();
+        }
+        String nouveauMdp = modMDP.getText();
+        String nouvelleAdresse = modAdresse.getText();
+        String nouvelleVille = modVille.getText();
+        String nouveauCP = modCodePostal.getText();
+        String nouvelleDateEmbauche = modDateEmbauche.getText();
+        String nouveauID = modIdentifiant.getText();
+        if (!uneValeurPasBonne(nouveauNom, nouveauPrenom, nouveauLogin, nouveauMdp, nouvelleAdresse, nouvelleVille, nouveauCP, nouvelleDateEmbauche, nouveauID)) {
+            bdd.ajouterUtilisateur(new Utilisateur(nouveauID, nouveauNom, nouveauPrenom, nouveauLogin, nouveauMdp, nouvelleAdresse, nouveauCP, nouvelleVille, nouvelleDateEmbauche));
+            modNom.setText("");
+            modPrenom.setText("");
+            modLogin.setText("");
+            modMDP.setText("");
+            modAdresse.setText("");
+            modVille.setText("");
+            modCodePostal.setText("");
+            modDateEmbauche.setText("");
+            modIdentifiant.setText("");
+        }
+    }
+    
+    final void activerAjoutUtilisateur() {
+        this.ajoutUtilisateur = true;
+        this.buttonValider.setText("Ajouter Utilisateur");
+        affichageNom.setText("Nouvel");
+        affichagePrenom.setText("Utilisateur");
+        String nouvelIdentifiant = bdd.genererIdentifiantValide();
+        affichageIdentifiant.setText(nouvelIdentifiant);
+        LocalDate dateObj = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        modNom.setText("");
+        modPrenom.setText("");
+        modLogin.setText("");
+        modLogin.setEnabled(false);
+        modLogin.setBackground(Color.lightGray);
+        modMDP.setText("");
+        modAdresse.setText("");
+        modVille.setText("");
+        modCodePostal.setText("");
+        modDateEmbauche.setText(dateObj.format(formatter));
+        modIdentifiant.setText(nouvelIdentifiant);
     }
     
     /**
@@ -146,8 +301,18 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         tableVisiteurs.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             public void valueChanged(ListSelectionEvent event) {
                 if (tableModel.getRowCount() != 0 && !modification) {
-                    System.out.println("Lignes :");
-                    System.out.println(tableModel.getRowCount());
+                    ajoutUtilisateur = false;
+                    buttonValider.setText("Valider Modifications");
+                    modLogin.setEnabled(true);
+                    modNom.setBackground(Color.WHITE);
+                    modPrenom.setBackground(Color.WHITE);
+                    modLogin.setBackground(Color.WHITE);
+                    modMDP.setBackground(Color.WHITE);
+                    modAdresse.setBackground(Color.WHITE);
+                    modVille.setBackground(Color.WHITE);
+                    modCodePostal.setBackground(Color.WHITE);
+                    modDateEmbauche.setBackground(Color.WHITE);
+                    modIdentifiant.setBackground(Color.WHITE);
                     actualiserFenetreModification(tableVisiteurs.getValueAt(tableVisiteurs.getSelectedRow(), 2).toString());
                 }
             }
@@ -159,7 +324,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane1)
+                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 497, Short.MAX_VALUE)
                 .addContainerGap())
         );
         jPanel1Layout.setVerticalGroup(
@@ -182,7 +347,7 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         });
 
         boutonMenu.setBackground(new java.awt.Color(102, 102, 102));
-        boutonMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ressources/Hamburger_icon.svg.png"))); // NOI18N
+        boutonMenu.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ressources/add_icon.png"))); // NOI18N
         boutonMenu.setBorder(null);
         boutonMenu.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -196,19 +361,19 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(jPanel2Layout.createSequentialGroup()
-                .addGap(18, 18, 18)
+                .addGap(24, 24, 24)
                 .addComponent(barreRecherche, javax.swing.GroupLayout.PREFERRED_SIZE, 374, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(boutonMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(24, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(16, 16, 16)
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(barreRecherche)
-                    .addComponent(boutonMenu, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(barreRecherche, javax.swing.GroupLayout.DEFAULT_SIZE, 75, Short.MAX_VALUE)
+                    .addComponent(boutonMenu, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
@@ -247,6 +412,8 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jLabel7.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel7.setText("Nom :");
 
+        modNom.setBorder(null);
+
         jPanel9.setBackground(new java.awt.Color(221, 181, 19));
 
         javax.swing.GroupLayout jPanel9Layout = new javax.swing.GroupLayout(jPanel9);
@@ -264,6 +431,8 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jLabel9.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel9.setText("Prénom :");
 
+        modPrenom.setBorder(null);
+
         jLabel8.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel8.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel8.setText("Login :");
@@ -271,6 +440,10 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel10.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel10.setText("Mot de passe :");
+
+        modLogin.setBorder(null);
+
+        modMDP.setBorder(null);
 
         jPanel10.setBackground(new java.awt.Color(221, 181, 19));
 
@@ -289,9 +462,13 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jLabel11.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel11.setText("Adresse :");
 
+        modAdresse.setBorder(null);
+
         jLabel12.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel12.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel12.setText("Ville :");
+
+        modVille.setBorder(null);
 
         jPanel11.setBackground(new java.awt.Color(221, 181, 19));
 
@@ -310,13 +487,19 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
         jLabel13.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel13.setText("Code postal :");
 
+        modCodePostal.setBorder(null);
+
         jLabel14.setFont(new java.awt.Font("Segoe UI", 0, 22)); // NOI18N
         jLabel14.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel14.setText("Date d'embauche :");
 
+        modDateEmbauche.setBorder(null);
+
         jLabel15.setFont(new java.awt.Font("Segoe UI", 0, 24)); // NOI18N
         jLabel15.setHorizontalAlignment(javax.swing.SwingConstants.RIGHT);
         jLabel15.setText("Identifiant :");
+
+        modIdentifiant.setBorder(null);
 
         jPanel12.setBackground(new java.awt.Color(221, 181, 19));
 
@@ -580,61 +763,17 @@ public class GSB_Gestion_Utilisateur extends javax.swing.JFrame {
     }//GEN-LAST:event_barreRechercheActionPerformed
 
     private void boutonMenuActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_boutonMenuActionPerformed
-        // TODO add your handling code here:
+        activerAjoutUtilisateur();
     }//GEN-LAST:event_boutonMenuActionPerformed
 
     private void buttonValiderActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_buttonValiderActionPerformed
-        ArrayList<Utilisateur> users = bdd.getUtilisateurs(affichageIdentifiant.getText());
-        for (Utilisateur user : users) {
-            if (user.getNom().equals(affichageNom.getText())) {
-                if (user.getPrenom().equals(affichagePrenom.getText())) {
-                    if (user.getId().equals(affichageIdentifiant.getText())) {
-                        this.modification = true;
-                        Utilisateur userModified = new Utilisateur(modIdentifiant.getText(), modNom.getText(), modPrenom.getText(), modLogin.getText(), modMDP.getText(), modAdresse.getText(), modCodePostal.getText(), modVille.getText(), modDateEmbauche.getText());
-                        bdd.modifierUtilisateur(user, userModified);
-                        barreRecherche.setText("");
-                        actualiserTableVisiteur();
-                        this.modification = false;
-                    }
-                }
-            }
+        if (!this.ajoutUtilisateur){
+            this.modifierUtilisateur();
+        }
+        else {
+            this.ajouterUtilisateur();
         }
     }//GEN-LAST:event_buttonValiderActionPerformed
-
-    /**
-     * @param args the command line arguments
-     */
-    public static void main(String args[]) {
-        /* Set the Nimbus look and feel */
-        //<editor-fold defaultstate="collapsed" desc=" Look and feel setting code (optional) ">
-        /* If Nimbus (introduced in Java SE 6) is not available, stay with the default look and feel.
-         * For details see http://download.oracle.com/javase/tutorial/uiswing/lookandfeel/plaf.html 
-         */
-        try {
-            for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
-                    javax.swing.UIManager.setLookAndFeel(info.getClassName());
-                    break;
-                }
-            }
-        } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(GSB_Gestion_Utilisateur.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(GSB_Gestion_Utilisateur.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(GSB_Gestion_Utilisateur.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(GSB_Gestion_Utilisateur.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
-        }
-        //</editor-fold>
-
-        /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new GSB_Gestion_Utilisateur().setVisible(true);
-            }
-        });
-    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel affichageIdentifiant;
