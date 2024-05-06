@@ -10,6 +10,7 @@ import java.util.ArrayList;
 /**
  *
  * @author efleury
+ * @author amhoumadi
  */
 public class BaseDeDonnees {
     private Connection connexion;
