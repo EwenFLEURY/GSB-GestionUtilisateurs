@@ -7,6 +7,7 @@ package gsb_frais;
 /**
  *
  * @author efleury
+ * @author amhoumadi
  */
 public class Utilisateur {
     private String id;
