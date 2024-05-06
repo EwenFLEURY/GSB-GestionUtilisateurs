@@ -7,6 +7,7 @@ package gsb_frais;
 /**
  *
  * @author efleury
+ * @author amhoumadi
  */
 public class GSB_Gestion_Utilisateur_Connexion extends javax.swing.JFrame {
 
